@@ -54,6 +54,8 @@ The - prefix means that the function is inverted. (Fast start, slow end.)
 
 The +- prefix means that the function is centered. (Fast middle, slow ends.)
 
+The default value for this is `-quadratic`.
+
 Moonscript:
 ```moonscript
 -- Move the player at a constant speed over 2 seconds.
