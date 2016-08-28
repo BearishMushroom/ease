@@ -1,3 +1,12 @@
+--
+-- ease
+--
+-- Copyright (c) 2016 BearishMushroom
+--
+-- This library is free software; you can redistribute it and/or modify it
+-- under the terms of the MIT license. See LICENSE for details.
+--
+
 local combine, Ease, Tween, ins
 combine = function(t1, t2)
   for i, v in pairs(t2) do
