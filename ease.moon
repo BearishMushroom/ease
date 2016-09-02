@@ -33,7 +33,7 @@ class Ease
         x = x * 2
         if x < 1
           return .5 * v x
-        else
+        else 
           x = 2 - x
           return .5 * (1 - v x) + .5
       ) for i, v in pairs @_easings}
@@ -42,7 +42,7 @@ class Ease
     @easings = combine @easings, outs
     @easings = combine @easings, inouts
 
-  ease: (obj, tweens, time) =>
+  tween: (obj, tweens, time) =>
     @add Tween @, obj, tweens, time
 
   add: (t) =>
@@ -123,7 +123,7 @@ class Tween
           fn!
     @
 
-  ease: (obj, tweens, time) =>
+  tween: (obj, tweens, time) =>
     local t
     if not time
       t = Tween @parent, @obj, obj, tweens
@@ -157,7 +157,7 @@ ins = Ease!
 setmetatable {
   :Tween
   :Ease
-  ease: ins\ease
+  tween: ins\tween
   update: ins\update
   _instance: ins
-}, { __call: (...) => ins\ease ... }
+}, { __call: (...) => ins\tween ... }

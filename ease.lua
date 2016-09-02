@@ -1,12 +1,3 @@
---
--- ease
---
--- Copyright (c) 2016 BearishMushroom
---
--- This library is free software; you can redistribute it and/or modify it
--- under the terms of the MIT license. See LICENSE for details.
---
-
 local combine, Ease, Tween, ins
 combine = function(t1, t2)
   for i, v in pairs(t2) do
@@ -38,7 +29,7 @@ do
         return 2 ^ (10 * (x - 1))
       end
     },
-    ease = function(self, obj, tweens, time)
+    tween = function(self, obj, tweens, time)
       return self:add(Tween(self, obj, tweens, time))
     end,
     add = function(self, t)
@@ -174,7 +165,7 @@ do
       end
       return self
     end,
-    ease = function(self, obj, tweens, time)
+    tween = function(self, obj, tweens, time)
       local t
       if not time then
         t = Tween(self.parent, self.obj, obj, tweens)
@@ -252,9 +243,9 @@ ins = Ease()
 return setmetatable({
   Tween = Tween,
   Ease = Ease,
-  ease = (function()
+  tween = (function()
     local _base_0 = ins
-    local _fn_0 = _base_0.ease
+    local _fn_0 = _base_0.tween
     return function(...)
       return _fn_0(_base_0, ...)
     end
@@ -269,6 +260,6 @@ return setmetatable({
   _instance = ins
 }, {
   __call = function(self, ...)
-    return ins:ease(...)
+    return ins:tween(...)
   end
 })
