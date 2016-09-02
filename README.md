@@ -96,6 +96,9 @@ local tween = ease(player, {x = 300}, 1)
 tween:ease({y = 500}, 2)
 ```
 
+#### `\spring([object,] springs [, damping, frequency])`
+Calling `spring()` will set up a new spring that will start once the current spring has finished.
+
 #### `\on_start(fn)`
 Calls function `fn` once the tween starts, calling `on_start()` multiple times will add multiple callbacks.
 
@@ -112,19 +115,69 @@ As all of `Tween`'s methods return the callee, they can be chained in a conventi
 Moonscript:
 ```moonscript
 -- Move the player at a constant speed on x, wait one second, and then move on y
-ease(player, {x: 300}, 5)\type("linear")\ease({y: 400}, 2)\wait 1
+ease(player, {x: 300}, 5)\type("linear")\tween({y: 400}, 2)\wait 1
 ```
 Lua:
 ```lua
 -- Move the player at a constant speed on x, wait one second, and then move on y
-ease(player, {x = 300}, 5):type("linear"):ease({y = 400}, 2):wait(1)
+ease(player, {x = 300}, 5):type("linear"):tween({y = 400}, 2):wait(1)
 ```
 Moonscript's `with` blocks can also be used for a more readable syntax.
 ```moonscript
 with ease player, {x: 300}, 5
   \type "linear"
-  with \ease {y: 400}, 2
+  with \tween {y: 400}, 2
     \wait 1
+```
+
+### Spring
+Calling `ease.spring()` will generate a `Spring` object.
+A spring offers a different type of easing.
+There are also many methods that can be used to alter your spring.
+
+`ease.spring()` takes in up to 4 arguments:
+* The 'source' table that the springing will be applied to.
+* A table containing the target values for all springed fields.
+* An optional damping factor for the algorithm. (default: `0.3`)
+* An optional frequency for the springing oscillations. (default: `24`)
+
+#### `\wait(time)`
+Causes the spring to wait `time` seconds before starting. The default value for this is `0`.
+
+#### `\stop()`
+Calling this will stop the spring, and it will stop being updated. Any spring that's been stopped should be considered destroyed.
+
+#### `\update(dt)`
+Calling this will progress the spring by `dt` seconds. Note that the library will call this on it's own, and calling it manually can lead to some problems.
+
+#### `\tween([object,] tweens, time)`
+Calling `tween()` will set up a new tween that will start once the current spring has finished.
+
+#### `\spring([object,] springs [, damping, frequency])`
+Calling `spring()` will set up a new spring that will start once the current spring has finished.
+
+#### `\on_start(fn)`
+Calls function `fn` once the spring starts, calling `on_start()` multiple times will add multiple callbacks.
+
+#### `\on_update(fn)`
+Calls function `fn` every time the spring updates, calling `on_update()` multiple times will add multiple callbacks.
+
+#### `\on_end(fn)`
+Calls function `fn` once the spring ends, calling `on_end()` multiple times will add multiple callbacks.
+
+### Chaining:
+As all of `Spring`'s methods return the callee, they can be chained in a conventient manner.
+You can also chain combinations of springs and tweens.
+
+Moonscript:
+```moonscript
+-- Move the player at a constant speed on x, wait one second, and then move on y
+ease.spring(player, {x: 300})\wait(0.1)\tween({y: 400}, 2)\wait 1
+```
+Lua:
+```lua
+-- Move the player at a constant speed on x, wait one second, and then move on y
+ease.spring(player, {x = 300}):wait(0.1):tween({y = 400}, 2):wait(1)
 ```
 
 ### Lisence

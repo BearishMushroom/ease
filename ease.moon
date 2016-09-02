@@ -9,13 +9,15 @@
 
 local *
 
+pi = 3.14159265359
+
 combine = (t1, t2) ->
   for i, v in pairs t2
     t1[i] = v
   t1
 
 class Ease
-  _version: "0.1.0"
+  _version: "0.1.3"
   _easings:
     linear:      (x) -> x
     quadratic:   (x) -> x * x
@@ -45,6 +47,9 @@ class Ease
   tween: (obj, tweens, time) =>
     @add Tween @, obj, tweens, time
 
+  spring: (obj, springs, damping, freq) =>
+    @add Spring @, obj, springs, damping, freq
+
   add: (t) =>
     table.insert @alive, t
     t
@@ -55,35 +60,12 @@ class Ease
   update: (dt) =>
     for i, v in ipairs @alive
       v\update dt
-      if v.progress >= 1
+      if v.dead
         table.remove @alive, i
         i -= 1
-        v._on_end! if not v.dead and v._on_end
+        v._on_end! if not v.stopped and v._on_end
 
-class Tween
-  new: (parent, obj, tweens, time) =>
-    @parent = parent
-    @obj = obj
-    @speed = 1 / time
-    @progress = 0
-    @delay = 0
-    @_type = "-quadratic"
-    @type @_type
-    @tweens = {i, v for i, v in pairs tweens}
-    for i, v in pairs @tweens
-      x = @obj[i]
-      @tweens[i] =
-        start: x
-        left: v - x
-
-  type: (fn) =>
-    if @parent.easings[fn]
-      @_type = fn
-      @fn = @parent.easings[fn]
-    else
-      error "Invalid easing type: " .. fn
-    @
-
+class Easing
   wait: (t) =>
     if (type t) != 'number'
       error "Expected numeric delay"
@@ -132,14 +114,103 @@ class Tween
     @on_end -> @parent\add t
     t
 
+  spring: (obj, springs, damping, freq) =>
+    local t
+    if not freq
+      t = Spring @parent, @obj, obj, springs, damping
+    else
+      t = Tween @parent, obj, springs, damping, freq
+    @on_end -> @parent\add t
+    t
+
   stop: =>
-    @progress = 1
+    @stopped = true
     @dead = true
+
+class Spring extends Easing
+  new: (parent, obj, springs, damping, freq) =>
+    @parent = parent
+    @obj = obj
+    @delay = 0
+    @damping = damping or 0.3
+    @freq = freq or 24
+    @done = 0
+    @count = 0
+    @springs = {i, v for i, v in pairs springs}
+    for i, v in pairs @springs
+      @count += 1
+      x = @obj[i]
+      @springs[i] =
+        velocity: 0
+        current: x
+        start: x
+        target: v
 
   update: (dt) =>
     if @delay > 0
       @delay -= dt
     else
+      if @_on_start
+        @_on_start!
+        @_on_start = nil
+
+      f = 1 + 2 * dt * @damping * @freq
+      oo = @freq * @freq
+      hoo = dt * oo
+      hhoo = dt * hoo
+      detInv = 1.0 / (f + hhoo)
+
+      for j, k in pairs @springs
+        detX = f * k.current + dt * k.velocity + hhoo * k.target
+        detV = k.velocity + hoo * (k.target - k.current)
+        if not ((math.abs (math.abs k.start) - (math.abs k.target)) / 100 >=
+          (math.abs (math.abs k.current) - (math.abs k.target)) and math.abs(k.velocity) < 1)
+          k.current = detX * detInv
+          k.velocity = detV * detInv
+          @obj[j] = k.current
+        elseif not k.done
+          @obj[j] = k.target
+          k.done = true
+          @done += 1
+
+      if @done >= @count
+        @dead = true
+
+      cb = @_on_update
+      cb! if cb
+
+class Tween extends Easing
+  new: (parent, obj, tweens, time) =>
+    @parent = parent
+    @obj = obj
+    @speed = 1 / time
+    @progress = 0
+    @delay = 0
+    @_type = "-quadratic"
+    @type @_type
+    @tweens = {i, v for i, v in pairs tweens}
+    for i, v in pairs @tweens
+      x = @obj[i]
+      @tweens[i] =
+        start: x
+        left: v - x
+
+  type: (fn) =>
+    if @parent.easings[fn]
+      @_type = fn
+      @fn = @parent.easings[fn]
+    else
+      error "Invalid easing type: " .. fn
+    @
+
+  update: (dt) =>
+    if @delay > 0
+      @delay -= dt
+    else
+      if @progress >= 1
+        @dead = true
+        return
+
       if @_on_start
         @_on_start!
         @_on_start = nil
@@ -158,7 +229,9 @@ ins = Ease!
 setmetatable {
   :Tween
   :Ease
+  :Spring
   tween: ins\tween
+  spring: ins\spring
   update: ins\update
   _instance: ins
 }, { __call: (...) => ins\tween ... }
