@@ -8,7 +8,7 @@ end
 do
   local _class_0
   local _base_0 = {
-    _version = "0.0.3",
+    _version = "0.1.0",
     _easings = {
       linear = function(x)
         return x
@@ -196,7 +196,7 @@ do
           self.obj[j] = k.start + x * k.left
         end
         if self._on_update then
-          return self:_on_update()
+          return self:_on_update(self.progress)
         end
       end
     end

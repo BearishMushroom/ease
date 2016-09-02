@@ -15,7 +15,7 @@ combine = (t1, t2) ->
   t1
 
 class Ease
-  _version: "0.0.3"
+  _version: "0.1.0"
   _easings:
     linear:      (x) -> x
     quadratic:   (x) -> x * x
@@ -33,7 +33,7 @@ class Ease
         x = x * 2
         if x < 1
           return .5 * v x
-        else 
+        else
           x = 2 - x
           return .5 * (1 - v x) + .5
       ) for i, v in pairs @_easings}
@@ -151,7 +151,7 @@ class Tween
       for j, k in pairs @tweens
         @obj[j] = k.start + x * k.left
 
-      @_on_update! if @_on_update
+      @_on_update @progress if @_on_update
 
 ins = Ease!
 setmetatable {
