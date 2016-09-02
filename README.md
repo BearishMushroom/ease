@@ -1,6 +1,8 @@
 # ease
 A minimal easing library for Moonscript and Lua.
 
+![alt text](https://github.com/BearishMushroom/ease/blob/master/GIF.gif)
+
 ### Usage
 Drop either `ease.moon` or `ease.lua` into your project and require it.
 ```lua
