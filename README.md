@@ -17,7 +17,7 @@ Lua:
 ease.update(dt)
 ```
 
-You can now start easing any number of numeric values in a table by calling `ease.ease()`, or just `ease()`.
+You can now start easing any number of numeric values in a table by calling `ease.tween()`, or just `ease()`.
 
 `ease()` takes in 3 arguments:
 * The "source" table that the easing will be applied to.
@@ -35,11 +35,11 @@ Lua:
 ease(player, {x = 200, y = 300, rot = 180}, 0.5)
 ```
 ### Tween
-Calling `ease()` will result in a `Tween` object.
+Calling `ease()` or `ease.tween()` will result in a `Tween` object.
 The `Tween` object contains a few methods that allow you to change the behaviour of your ease.
 
 #### `\wait(time)`
-Causes the ease to wait `time` seconds before starting. The default value for this is `0`.
+Causes the tween to wait `time` seconds before starting. The default value for this is `0`.
 
 #### `\type(fn)`
 Describes the function that should be used for easing. The valid functions are:
@@ -68,18 +68,18 @@ tween:type("linear")
 ```
 
 #### `\stop()`
-Calling this will stop the ease, and it will stop being updated. Any ease that's been stopped should be considered destroyed.
+Calling this will stop the tween, and it will stop being updated. Any tween that's been stopped should be considered destroyed.
 
 #### `\update(dt)`
-Calling this will progress the ease by `dt` seconds. Note that the library will call this on it's own, and calling it manually can lead to some problems.
+Calling this will progress the tween by `dt` seconds. Note that the library will call this on it's own, and calling it manually can lead to some problems.
 
-#### `\ease([object,] tweens, time)`
-Calling `ease()` will set up a new ease that will start once the current ease has finished.
+#### `\tween([object,] tweens, time)`
+Calling `tween()` will set up a new tween that will start once the current tween has finished.
 
-If the `object` argument isn't supplied, the new ease will use the same object as the current ease.
+If the `object` argument isn't supplied, the new tween will use the same object as the current tween.
 
-This function will return the new ease, and not the current one.
-Calling this function multiple times on the same ease will start all the chains at the same time.
+This function will return the new tween, and not the current one.
+Calling this function multiple times on the same tween will start all the chains at the same time.
 
 Moonscript:
 ```moonscript
@@ -98,7 +98,8 @@ tween:ease({y = 500}, 2)
 Calls function `fn` once the tween starts, calling `on_start()` multiple times will add multiple callbacks.
 
 #### `\on_update(fn)`
-Calls function `fn` every time the tween updated, calling `on_update()` multiple times will add multiple callbacks.
+Calls function `fn` every time the tween updates, calling `on_update()` multiple times will add multiple callbacks.
+This also passes the tween's progress in the range of `0-1`.
 
 #### `\on_end(fn)`
 Calls function `fn` once the tween ends, calling `on_end()` multiple times will add multiple callbacks.
