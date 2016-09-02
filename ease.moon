@@ -107,9 +107,9 @@ class Tween
         fn
       else
         old = @_on_update
-        ->
-          old!
-          fn!
+        (p) ->
+          old p
+          fn p
     @
 
   on_end: (fn) =>
@@ -151,7 +151,8 @@ class Tween
       for j, k in pairs @tweens
         @obj[j] = k.start + x * k.left
 
-      @_on_update @progress if @_on_update
+      cb = @_on_update
+      cb p if cb
 
 ins = Ease!
 setmetatable {

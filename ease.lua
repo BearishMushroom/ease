@@ -145,9 +145,9 @@ do
         self._on_update = fn
       else
         local old = self._on_update
-        self._on_update = function()
-          old()
-          return fn()
+        self._on_update = function(p)
+          old(p)
+          return fn(p)
         end
       end
       return self
@@ -195,8 +195,9 @@ do
         for j, k in pairs(self.tweens) do
           self.obj[j] = k.start + x * k.left
         end
-        if self._on_update then
-          return self:_on_update(self.progress)
+        local cb = self._on_update
+        if cb then
+          return cb(p)
         end
       end
     end
