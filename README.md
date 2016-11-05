@@ -89,17 +89,17 @@ Moonscript:
 ```moonscript
 -- Move the player first on the x-axis, and then on y
 tween = ease player, {x: 300}, 1
-tween\ease {y: 500}, 2
+tween\tween {y: 500}, 2
 ```
 Lua:
 ```lua
 -- Move the player first on the x-axis, and then on y
 local tween = ease(player, {x = 300}, 1)
-tween:ease({y = 500}, 2)
+tween:tween({y = 500}, 2)
 ```
 
 #### `\spring([object,] springs [, damping, frequency])`
-Calling `spring()` will set up a new spring that will start once the current spring has finished.
+Calling `spring()` will set up a new spring that will start once the current tween has finished.
 
 #### `\on_start(fn)`
 Calls function `fn` once the tween starts, calling `on_start()` multiple times will add multiple callbacks.
